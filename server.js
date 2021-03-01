@@ -1,21 +1,21 @@
 const express = require('express');
-
-// express app
 const app = express();
+const bodyParser = require("body-parser");
+const morgan = require("morgan");
+const urlEncoded = bodyParser.urlencoded({ extended: false });
+let blogs = new Array;
 
-// listen for requests
 app.listen(3000);
 
-// register view engine
+app.use(express.static("public"));
+
 app.set('view engine', 'ejs');
-// app.set('views', 'myviews');
 
 app.get('/', (req, res) => {
-  const blogs = [
-    {title: 'Yoshi finds eggs', snippet: 'Lorem ipsum dolor sit amet consectetur'},
-    {title: 'Mario finds stars', snippet: 'Lorem ipsum dolor sit amet consectetur'},
-    {title: 'How to defeat bowser', snippet: 'Lorem ipsum dolor sit amet consectetur'},
-  ];
+  res.render('index', { title: 'Home', blogs });
+});
+
+app.get('/blogs', (req, res) => {
   res.render('index', { title: 'Home', blogs });
 });
 
@@ -25,6 +25,16 @@ app.get('/about', (req, res) => {
 
 app.get('/blogs/create', (req, res) => {
   res.render('create', { title: 'Create a new blog' });
+});
+
+app.post("/blogs", urlEncoded, (req, res) =>{
+  const postReq = req.body;
+  blogs.push({
+    title: postReq.title,
+    snippet: postReq.snippet,
+    body: postReq.body
+  });
+  res.render("index", { title: "Home", blogs });
 });
 
 // 404 page
